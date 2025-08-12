@@ -35,6 +35,7 @@ npm install
 Create a .env file and add your OpenWeather API key:
 
 //iam giving my api key for testing
+
 VITE_WEATHER_API_KEY=9839910cf13df661945b50ed23ca1200
 
 5: Start the development server:
