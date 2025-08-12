@@ -7,6 +7,9 @@ import type { CurrentWeather, ForecastDay } from './components/WeatherUtils';
 import WeatherChart from './components/WeatherChart';
 import OneDayWeatherPie from './components/WeatherPieChart';
 import './App.css';
+// Import the API key from environment variables
+const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+
 
 export default function App() {
   const [city, setCity] = useState<string>('');
@@ -46,7 +49,7 @@ export default function App() {
     const [lat, lon] = coords;
 
     try {
-      const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=9839910cf13df661945b50ed23ca1200&units=metric`;
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
       const response = await axios.get(weatherUrl);
     
       if (!response.data || !response.data.list) {
