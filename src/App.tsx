@@ -7,9 +7,9 @@ import type { CurrentWeather, ForecastDay } from './components/WeatherUtils';
 import WeatherChart from './components/WeatherChart';
 import OneDayWeatherPie from './components/WeatherPieChart';
 import './App.css';
+
 // Import the API key from environment variables
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-
 
 export default function App() {
   const [city, setCity] = useState<string>('');
@@ -18,7 +18,6 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [showFiveDay, setShowFiveDay] = useState<boolean>(false);
 
-  // Fetch coordinates by city name
   const fetchCoordinates = async (cityName: string): Promise<[number, number] | null> => {
     try {
       const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`;
@@ -36,7 +35,6 @@ export default function App() {
     }
   };
 
-  // Fetch weather data (current + 5-day)
   const checkWeather = async (cityName: string) => {
     setError(null);
     setForecast([]);
@@ -51,13 +49,12 @@ export default function App() {
     try {
       const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
       const response = await axios.get(weatherUrl);
-    
+
       if (!response.data || !response.data.list) {
         setError('No forecast data found.');
         return;
       }
 
-      // Get 5-day forecast
       const processedForecast = getFiveDayForecast(response.data.list);
       if (Array.isArray(processedForecast)) {
         setForecast(processedForecast);
@@ -65,12 +62,10 @@ export default function App() {
         setError((processedForecast as any).error || 'Error processing forecast data.');
       }
 
-      // Get current weather from first data point
       const processedCurrent = getCurrentWeather(response.data.list[0]);
       if ('error' in processedCurrent) {
         setError(processedCurrent.error);
       } else {
-        console.log('Current weather data:', processedCurrent);
         setCurrentWeather(processedCurrent);
       }
     } catch (err) {
@@ -79,18 +74,17 @@ export default function App() {
     }
   };
 
-  // Helper to get weather icon based on description
   const getWeatherIcon = (desc: string) => {
-    if(currentWeather?.weatherData && currentWeather.weatherData.length > 0) {
+    if (currentWeather?.weatherData && currentWeather.weatherData.length > 0) {
       const icon = currentWeather.weatherData[0].icon;
-      const iconUrl=`https://openweathermap.org/img/wn/${icon}@2x.png`;
+      const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
       return <img src={iconUrl} alt={desc} style={{ width: 50, height: 50 }} />;
     }
     return null;
   };
 
   return (
-    <div className="div_container" >
+    <div className="div_container">
       <h1>Weather App</h1>
       <p>Enter a city to get the weather forecast.</p>
       <Input
@@ -120,7 +114,6 @@ export default function App() {
 
       {error && <p style={{ color: 'red', fontStyle: 'italic' }}>{error}</p>}
 
-      {/* Toggle Link */}
       {currentWeather && (
         <p
           style={{
@@ -136,7 +129,6 @@ export default function App() {
         </p>
       )}
 
-      {/* Current Day Weather + Pie Charts */}
       {!showFiveDay && currentWeather && (
         <div style={{ marginTop: 30, textAlign: 'center' }}>
           <h2>
@@ -161,7 +153,6 @@ export default function App() {
             <strong>Chance of Rain:</strong> {currentWeather.chanceOfRain}
           </p>
 
-          {/* Pie charts for Humidity and Rain Chance */}
           <OneDayWeatherPie
             humidity={parseFloat(currentWeather.humidity)}
             rainChance={parseFloat(currentWeather.chanceOfRain)}
@@ -169,7 +160,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Five Day Forecast Chart */}
       {showFiveDay && forecast.length > 0 && (
         <div style={{ marginTop: 40 }}>
           <h2>Five-Day Forecast for {city}</h2>
